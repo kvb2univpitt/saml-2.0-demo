@@ -1,0 +1,48 @@
+history -c;history -w;exit
+
+systemctl stop httpd.service
+systemctl stop postgresql.service
+================================================================================
+clear;docker ps -a
+clear;docker images
+================================================================================
+clear;docker build -t kvb2univpitt/saml-sp-ajp-demo:v1.2021.4 .
+
+docker run -d \
+-p 80:80 \
+-p 443:443 \
+--name=saml-sp-ajp-demo \
+kvb2univpitt/saml-sp-ajp-demo:v1.2021.4
+
+docker stop saml-sp-ajp-demo;docker rm saml-sp-ajp-demo
+docker rmi kvb2univpitt/saml-sp-ajp-demo:v1.2021.4
+================================================================================
+docker build -t kvb2univpitt/saml-sp-shibboleth-demo:v1.2021.4 .
+
+docker run -d --name=saml-sp-shibboleth-demo \
+-p 80:80 \
+-p 443:443 \
+kvb2univpitt/saml-sp-shibboleth-demo:v1.2021.4
+
+docker stop saml-sp-shibboleth-demo;docker rm saml-sp-shibboleth-demo
+docker rmi kvb2univpitt/saml-sp-shibboleth-demo:v1.2021.4
+================================================================================
+docker build -t kvb2univpitt/saml-idp-demo:v1.2021.4 .;
+
+docker run -d --name=saml-idp-demo \
+-p 8080:8080 \
+-p 8443:8443 \
+-e SIMPLESAMLPHP_ADMIN_PASSWORD=admin123 \
+-e SIMPLESAMLPHP_UID=1 \
+-e SIMPLESAMLPHP_USERNAME=ckent \
+-e SIMPLESAMLPHP_PASSWORD=superman \
+-e SIMPLESAMLPHP_GROUP="Daily Planet" \
+-e SIMPLESAMLPHP_EMAIL=ckent@dailyplanet.com \
+-e SIMPLESAMLPHP_FIRST_NAME=Clark \
+-e SIMPLESAMLPHP_LAST_NAME=Kent \
+-e SIMPLESAMLPHP_DISPLAY_NAME="Clark Kent (Kal-El)" \
+kvb2univpitt/saml-idp-demo:v1.2021.4
+
+docker stop saml-idp-demo;docker rm saml-idp-demo
+docker rmi kvb2univpitt/saml-idp-demo:v1.2021.4
+================================================================================
